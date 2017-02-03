@@ -9,8 +9,6 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
 
-Install Packages
-
 ```{r}
 library(tidyverse)
 
@@ -88,8 +86,7 @@ ggplot(data = mpg) +
 
   
 ```
-
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+R Hadley book 3.9 Coordinate systems
 ```{r}
 ## R Hadley book 3.9 Coordinate systems
 ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
@@ -109,8 +106,177 @@ ggplot(nz, aes(long, lat, group = group)) +
   geom_polygon(fill = "white", colour = "black") +
   coord_quickmap()
 
+bar <- ggplot(data = diamonds) +
+  geom_bar(
+    mapping = aes(x = cut, fill = cut), 
+    show.legend = FALSE, 
+    width = 1
+  ) +
+  theme(aspect.ratio = 1) +
+  labs(x = NULL, y = NULL)
+
+bar + coord_flip()
+bar + coord_polar()
+
+bar <- ggplot(data = mpg) +
+  geom_bar(
+    mapping = aes(x = class, fill = class), 
+    show.legend = FALSE, 
+    width = 1
+  ) +
+  theme(aspect.ratio = 1) + 
+  labs(x = NULL, y = NULL)
+
+bar + coord_flip()
+bar + coord_polar()
+  
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() +
+  geom_abline() +
+  coord_fixed()
+  
+
+```
+
+
+```{r}
+## 3.10 The Layered Grammar of Graphics
+
+# ggplot(data = <DATA>) +
+#   <GEOM_FUNCTION> (
+#      mapping = aes(<MAPPINGS>), 
+#      stat = <STAT>, 
+#      position = <POSITION>
+#  ) +
+#   <COORDINATE_FUNCTION> +
+#   <FACET_FUNCTION>
+
 
 
 ```
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+
+```{r}
+## 4. WORKFLOW: basics 
+this_is_a_really_long_name <- 2.5 
+this_is_a_really_long_name <- 3.5
+r_rocks <- 2 ^ 3 
+r_rocks
+
+#4.3 Calling Functions 
+
+seq(1, 10)
+x <- "hello world"
+x
+y <- seq(1, 10, length.out = 5)
+y
+(y <- seq(1, 10, length.out = 5))
+
+#4.4 Practice
+
+my_variable <- 10
+my_variable
+
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) 
+
+## alt+shift+k will lead to the short cut menu!! 
+```
+
+```{r}
+## 5. DATA TRANSFORMATION 
+
+#5.1
+install.packages("nycflights13")
+
+library(nycflights13)
+library(tidyverse)
+
+flights
+## 5.2 Filter rows with filter() 
+
+filter(flights, month == 1, day ==1)
+jan1 <- filter(flights, month == 1, day ==1)
+
+(dec25 <- filter(flights, month == 12, day == 25))
+
+##5.2.1 Comparisons
+
+sqrt(2) ^ 2 == 2
+near(sqrt(2) ^ 2, 2)
+
+##5.2.2 Logical operators
+filter(flights, month == 11 | month == 12)
+
+(nov_dec <- filter(flights, month %in% c(11, 12)))
+
+filter(flights, !(arr_delay > 120 | dep_delay > 120))
+filter(flights, arr_delay <= 120, dep_delay <= 120)
+
+## 5.2.3 Missing Values
+
+x <- NA
+y <- NA
+x == y 
+is.na(x)
+
+df <- tibble(x = c(1, NA, 3))
+filter(df, x > 1)
+#> # A tibble: 1 x 1
+#>     x
+#> <dbl>
+#> 1    3 
+df
+filter(df, is.na(x) | x > 1)
+
+#5.2.4 Exercises
+filter(flights, arr_delay > 120)
+filter(flights, dest == "IAH" | dest == "HOU")
+filter(flights, carrier == "UA" | carrier == "AA" | carrier == "DL")
+filter(flights, arr_delay > 120, !dep_delay > 120)
+filter(flights, dep_delay > 60, arr_delay <= dep_delay-30)
+filter(flights, dep_time > 0000, dep_time <= 0600)
+filter(flights, between(dep_time, 0000, 0600))
+filter(flights, dep_time == NA)
+
+#5.3 Arrange rows with arrange()
+arrange(flights, year, month, day)
+arrange(flights, desc(arr_delay))
+
+df <- tibble(x = c(5, 2, NA))
+arrange(df, x)
+arrange(df, desc(x))
+
+#5.3 Exercises
+arrange(df, is.na(x)) 
+arrange(flights, desc(dep_delay))
+arrange(flights, dep_delay)
+arrange(flights, air_time)
+arrange(flights, desc(distance))
+arrange(flights, distance)
+```
+
+```{r}
+##5.4 Select Columns with select()
+install.packages("tidyverse")
+install.packages("nycflights13")
+library(tidyverse)
+library(nycflights13)
+
+flights
+
+install.packages("rmarkdown")
+
+select(flights, year, month, day)
+
+select(flights, year:day)
+select(flights, -(year:day))
+select(flights, ends_with("delay"))
+select(flights, contains("arr"))
+
+rename(flights, tail_num = tailnum)
+
+
+
+```
+
